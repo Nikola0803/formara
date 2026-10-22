@@ -86,3 +86,70 @@ h1{font-size:clamp(46px,6vw,82px);letter-spacing:-.045em}h2{font-size:clamp(34px
 @media(max-width:1000px){.fo-layout{grid-template-columns:1fr}.fo-image{height:420px}.re-inner{grid-template-columns:1fr}.hiw-explainer-grid{grid-template-columns:1fr}.stats-project-row{grid-template-columns:1fr}.shb-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.trust-bar-inner{gap:0}.trust-bar-inner span{padding:6px 14px 6px 0;margin-right:14px;font-size:10px}.fo-return-value{font-size:52px}.shb-grid{grid-template-columns:1fr}.ib-grid{grid-template-columns:1fr 1fr}.spr-kv{grid-template-columns:1fr 1fr}}
 @media(max-width:500px){.ib-grid{grid-template-columns:1fr}.spr-kv{grid-template-columns:1fr}}
+
+/* ── FundingMeter ── */
+.fm{background:#f8f7f4;border:1px solid var(--line);padding:20px;margin-top:16px}.fm-large{padding:28px}
+.fm-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.fm-return-block{flex:none}
+.fm-rate{display:block;font:700 52px/1 var(--display);color:var(--gold);letter-spacing:-.04em;margin-bottom:4px}
+.fm-large .fm-rate{font-size:68px}
+.fm-rate-sub{display:block;font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.fm-meta-right{display:flex;gap:0;flex-direction:column;text-align:right}
+.fm-meta-right>div{display:flex;flex-direction:column;gap:2px;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:8px}.fm-meta-right>div:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
+.fm-meta-right small{font-size:8px;letter-spacing:.14em;color:var(--muted)}
+.fm-meta-right strong{font-size:13px;font-weight:700;color:var(--ink)}
+.fm-progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px}
+.fm-progress-label strong{color:var(--ink)}
+.fm-bar-wrap{height:14px;background:#e5e4df;border-radius:7px;overflow:hidden;margin-bottom:12px}
+.fm-bar{display:block;height:100%;background:var(--gold);border-radius:7px;transition:width .4s ease}
+.fm-foot{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted)}
+.fm-foot strong{color:var(--ink)}
+.fm-urgency{color:#c0392b;font-weight:600}
+.fm-urgency strong{font-size:13px}
+.fm-funded{color:#2a6e3a;font-weight:700;font-size:12px}
+.fm-pipeline{background:#f0efe9;border:1px dashed #c9c8c2;padding:16px;text-align:center;margin-top:16px;display:flex;align-items:center;gap:12px;flex-direction:column}
+.fm-pipeline-tag{font-size:9px;letter-spacing:.16em;font-weight:700;color:var(--muted)}
+.fm-pipeline span{font-size:12px;color:var(--muted);max-width:280px;line-height:1.5}
+
+/* ── Campaign grid ── */
+.campaigns-section{background:var(--paper);padding-block:90px;border-top:1px solid var(--line)}
+.campaigns-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;flex-wrap:wrap;gap:16px}
+.campaigns-head h2{font-size:clamp(28px,3.5vw,44px);margin:0}
+.campaigns-filter-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.camp-filter-live,.camp-filter-funded,.camp-filter-pipe{padding:6px 14px;font-size:10px;letter-spacing:.1em;font-weight:700;border:1px solid var(--line);background:#fff;text-decoration:none;color:var(--muted);cursor:pointer}
+.camp-filter-live{border-color:#2a6e3a;color:#2a6e3a;background:#ecf5ec}
+.camp-filter-funded{border-color:#1e4070;color:#1e4070;background:#ecf0f5}
+.camp-filter-pipe{border-color:var(--muted)}
+.camp-all-link{font-size:11px;font-weight:700;color:var(--ink);text-decoration:none;letter-spacing:.06em;border-bottom:1px solid currentColor}
+.campaign-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+
+/* ── Campaign card ── */
+.campaign-card{background:#fff;border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .2s}
+.campaign-card:hover{box-shadow:0 8px 40px rgba(15,32,46,.1)}
+.campaign-live{border-top:3px solid var(--gold)}
+.cc-image-wrap{position:relative;overflow:hidden;flex-shrink:0}
+.cc-image-wrap img{width:100%;height:280px;object-fit:cover;display:block;transition:transform .3s}
+.campaign-card:hover .cc-image-wrap img{transform:scale(1.03)}
+.cc-status{position:absolute;top:14px;left:14px;font-size:10px;letter-spacing:.14em;font-weight:700;padding:6px 10px;display:flex;align-items:center;gap:6px}
+.cc-status-open{background:rgba(42,110,58,.92);color:#fff}
+.cc-status-funded{background:rgba(30,64,112,.92);color:#fff}
+.cc-status-pipeline{background:rgba(100,112,122,.82);color:#fff}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.85)}}
+.cc-live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#6be88a;animation:pulse 1.6s infinite}
+.cc-countdown{position:absolute;top:14px;right:14px;background:var(--gold);color:var(--navy);font-size:11px;font-weight:700;padding:5px 9px;line-height:1.3}
+.cc-countdown strong{display:block;font-size:16px;line-height:1}
+.cc-body{padding:24px;display:flex;flex-direction:column;flex:1}
+.cc-name-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px}
+.cc-ref{display:block;font-size:8px;letter-spacing:.16em;color:#967744;margin-bottom:6px}
+.cc-title{font:600 22px/1.2 var(--display);margin:0;color:var(--ink)}
+.cc-title em{font-family:Georgia,serif;font-weight:400}
+.cc-ltv-badge{flex-shrink:0;text-align:center;padding:8px 12px;background:var(--paper);border:1px solid var(--line)}
+.cc-ltv-badge small{display:block;font-size:7px;letter-spacing:.14em;color:var(--muted)}
+.cc-ltv-badge strong{display:block;font-size:15px;font-weight:700;color:var(--ink)}
+.cc-cta{display:block;background:var(--ink);color:#fff;text-align:center;text-decoration:none;font-weight:700;font-size:12px;letter-spacing:.1em;padding:14px;margin-top:auto;padding-top:16px;transition:background .15s}
+.cc-cta:hover{background:#1e3d56}
+.cc-cta-invest{background:var(--gold);color:var(--navy)}
+.cc-cta-invest:hover{background:#b8934a}
+
+@media(max-width:900px){.campaign-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.campaign-grid{grid-template-columns:1fr}.cc-image-wrap img{height:230px}}

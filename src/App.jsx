@@ -145,19 +145,36 @@ function Footer() {
   return <footer><div className="wrap footer-grid"><Brand light /><div><small>INVEST</small><Link to="/projects">Investment opportunities</Link><Link to="/how-it-works">How it works</Link><Link to="/statistics">Platform statistics</Link><Link to="/faq">Investor FAQ</Link><Link to="/blog">Knowledge base</Link><Link to="/invest">Investment model</Link><Link to="/security">Security & risk</Link><Link to="/portal">Investor portal</Link><Link to="/contact">Register interest</Link></div><div><small>PLATFORM</small><Link to="/strategy">Development strategy</Link><Link to="/nis-market">Niš market thesis</Link><Link to="/pipeline">2026–2029 pipeline</Link><Link to="/trust">Trust framework</Link><Link to="/about">About</Link></div></div><div className="wrap footer-bottom"><span>© 2026 Formara Property Capital. Concept platform · Advancing toward NBS registration.</span><span>Senior secured loans · Capital at risk · Returns not guaranteed</span></div></footer>
 }
 
-function FundingMeter({ project }) {
-  if (project.status === 'PIPELINE') return <div className="project-funding"><div className="fund-label"><span>INVESTMENT OPENING: PIPELINE — TIMING TBC</span></div></div>
-  const pct = Math.round(project.fundingRaised / project.fundingTarget * 100)
+function FundingMeter({ project, large = false }) {
   const fmt = n => '€' + (n >= 1000 ? Math.round(n / 1000) + 'k' : n)
-  return <div className="project-funding">
-    <div className="fund-label"><span>{pct}% funded</span><span>{fmt(project.fundingRaised)} of {fmt(project.fundingTarget)}</span></div>
-    <div className="fund-bar-wrap"><i className="fund-bar" style={{ width: `${pct}%` }} /></div>
-    <div className="fund-meta">
+  if (project.status === 'PIPELINE') return (
+    <div className="fm-pipeline">
+      <span className="fm-pipeline-tag">◎ PIPELINE</span>
+      <span>Opens when feasibility and planning evidence gates are passed · Est. {project.badges[0].replace('PIPELINE ', '')}</span>
+    </div>
+  )
+  const pct = Math.round(project.fundingRaised / project.fundingTarget * 100)
+  return <div className={`fm${large ? ' fm-large' : ''}`}>
+    <div className="fm-top">
+      <div className="fm-return-block">
+        <span className="fm-rate">{project.returnRate}</span>
+        <span className="fm-rate-sub">target return · gross · end of term</span>
+      </div>
+      <div className="fm-meta-right">
+        <div><small>TERM</small><strong>{project.duration}</strong></div>
+        <div><small>LTV</small><strong>{project.ltv}</strong></div>
+        <div><small>LOAN TYPE</small><strong>Senior secured</strong></div>
+      </div>
+    </div>
+    <div className="fm-progress-label">
+      <span><strong>{pct}%</strong> funded · {fmt(project.fundingRaised)} raised</span>
+      <span>{fmt(project.fundingTarget)} target</span>
+    </div>
+    <div className="fm-bar-wrap"><i className="fm-bar" style={{width:`${pct}%`}} /></div>
+    <div className="fm-foot">
       {project.investors > 0 && <span><strong>{project.investors}</strong> investors</span>}
-      {project.daysLeft > 0 && <span><strong>{project.daysLeft}</strong> days left</span>}
-      {project.status === 'FUNDED' && <span><strong>Fully funded ✓</strong></span>}
-      <span><strong>{project.returnRate}</strong> target</span>
-      <span><strong>{project.duration}</strong></span>
+      {project.daysLeft > 0 && <span className="fm-urgency">⏱ <strong>{project.daysLeft} days</strong> remaining</span>}
+      {project.status === 'FUNDED' && <span className="fm-funded">✓ Fully funded</span>}
     </div>
   </div>
 }
@@ -283,6 +300,37 @@ function Home() {
     <TrustBar />
     <StatsBand />
     <FeaturedOpportunity project={projects.urban} />
+    <section className="campaigns-section" id="all-campaigns" style={{background:'var(--paper)',paddingBlock:'80px'}}><div className="wrap">
+      <div className="campaigns-head">
+        <div><p className="eyebrow">ALL INVESTMENT CAMPAIGNS</p><h2>Live, funded<br /><em>and pipeline.</em></h2></div>
+        <div className="campaigns-filter-row">
+          <span className="camp-filter-live">● 1 Live</span>
+          <span className="camp-filter-funded">✓ 1 Funded</span>
+          <span className="camp-filter-pipe">◎ 2 Pipeline</span>
+          <Link to="/projects" className="camp-all-link">Filter →</Link>
+        </div>
+      </div>
+      <div className="campaign-grid">{Object.values(projects).map(p => <article className={`campaign-card${p.status === 'OPEN' ? ' campaign-live' : ''}`} key={p.path + '-home'}>
+        <div className="cc-image-wrap">
+          <img src={p.hero} alt={`${p.title} reference`} />
+          <span className={`cc-status cc-status-${p.status.toLowerCase()}`}>
+            {p.status === 'OPEN' ? <><i className="cc-live-dot" />OPEN</> : p.status === 'FUNDED' ? '✓ FUNDED' : '◎ PIPELINE'}
+          </span>
+          {p.daysLeft > 0 && <span className="cc-countdown"><strong>{p.daysLeft}</strong>d left</span>}
+        </div>
+        <div className="cc-body">
+          <div className="cc-name-row">
+            <div><small className="cc-ref">{p.eyebrow.split('·')[0].trim()}</small><h3 className="cc-title">{p.title} <em>{p.italic}</em></h3></div>
+            {p.status !== 'PIPELINE' && <div className="cc-ltv-badge"><small>LTV</small><strong>{p.ltv}</strong></div>}
+          </div>
+          <FundingMeter project={p} />
+          <Link className={`cc-cta${p.status === 'OPEN' ? ' cc-cta-invest' : ''}`} to={p.path}>
+            {p.status === 'OPEN' ? 'INVEST NOW →' : p.status === 'FUNDED' ? 'View funded project' : 'View pipeline details'}
+          </Link>
+        </div>
+      </article>)}</div>
+    </div></section>
+
     <section className="returns-explainer"><div className="wrap re-inner">
       <div className="re-left">
         <p className="eyebrow">HOW YOUR RETURNS WORK</p>
@@ -314,13 +362,10 @@ function Home() {
       </div>
     </div></section>
 
-    <section className="section wrap" id="opportunities"><div className="section-head"><div><p className="eyebrow">ALL INVESTMENT OPPORTUNITIES</p><h2>Live, funded<br /><em>and pipeline.</em></h2></div><p>One project open for investment. One funded and in progress. Two in the pipeline. Every project shows its real status.</p></div><div className="project-grid">{Object.values(projects).map((p, i) => <article className="project-card" key={p.path}><img src={p.hero} alt={`${p.title} ${p.italic} reference concept`} /><div><div className="card-status-row"><span className={`opp-tag opp-${p.status.toLowerCase()}`}>{p.status === 'OPEN' ? '● Open for investment' : p.status === 'FUNDED' ? '✓ Fully funded' : '◎ Pipeline'}</span></div><h3>{p.title}<br /><em>{p.italic}</em></h3><p>{p.thesis}</p><dl><div><dt>RETURN TARGET</dt><dd>{p.range}</dd></div><div><dt>HORIZON</dt><dd>{p.duration}</dd></div><div><dt>LTV</dt><dd>{p.ltv}</dd></div><div><dt>SECURITY</dt><dd>{p.mortgageRank}</dd></div></dl><FundingMeter project={p} /><Link className="card-cta-btn" to={p.path}>{p.status === 'OPEN' ? 'Invest in this project →' : 'View project details →'}</Link></div></article>)}</div><Link className="inline-link" to="/projects">See all opportunities with filters →</Link></section>
     <section className="section wrap returns" id="standards"><div><p className="eyebrow">COMMITMENT-BASED PARTICIPATION</p><h2>More committed capital.<br /><em>A higher target share.</em></h2><p>The prototype uses five commitment tiers from €50,000 to €500,000. Larger commitments receive a higher illustrative project-return target.</p><Link className="inline-link" to="/invest">Understand the tier model →</Link></div><div className="calculator"><label>INDICATIVE COMMITMENT <output>{money.format(amount)}</output><input type="range" min="50000" max="500000" step="10000" value={amount} onChange={e => setAmount(+e.target.value)} /></label><div className="tier-readout"><span>CURRENT ILLUSTRATIVE TIER</span><strong>{rate}%</strong><small>gross project target · 12-24 months</small></div><div className="tier-scale">{[[50, 18], [100, 21], [200, 24], [300, 27], [400, 30]].map(([k, r]) => <span className={rate === r ? 'active' : ''} key={k}>€{k}k+<b>{r}%</b></span>)}</div><div className="calc-results"><span>Illustrative gross gain<strong>{money.format(amount * rate / 100)}</strong></span><span>Illustrative total value<strong>{money.format(amount * (1 + rate / 100))}</strong></span></div><small>Illustration only · not a public offer or guaranteed return · capital at risk</small></div></section>
     <section className="security-section-home"><div className="wrap"><div className="sec-home-head"><div><p className="eyebrow">HOW YOUR INVESTMENT IS SECURED</p><h2>Six layers.<br /><em>Not just a promise.</em></h2><p>Every Formara project is structured with a defined security stack documented before a single euro is committed. Here is what sits between your capital and a worst-case outcome.</p><Link className="inline-link" to="/security">Full security explainer →</Link></div><img src="/assets/formara-construction.png" alt="Development site under construction" /></div><div className="sec-home-layers">{[['01','First-ranking mortgage','A registered charge over the development land title. The mortgage holder is repaid before any unsecured creditor in an enforcement scenario.'],['02','Personal guarantee','The development principal personally guarantees the loan obligation — creating recourse beyond the SPV.'],['03','Independent valuation','An MRICS valuation sets the LTV ceiling before investment opens. Formara targets below 65% LTV on every project.'],['04','Escrow & milestone drawdowns','Capital is held in a dedicated escrow account. No bulk advance to the developer — funds release only against signed construction milestones.'],['05','Construction all-risk insurance','A named CAR policy covers sudden physical loss during the build. Investors are noted as interested parties on the policy schedule.'],['06','Independent cost monitor','A chartered QS reviews and signs off every cost report before any drawdown is released. No milestone is approved without their written confirmation.']].map(([n,h,p]) => <div className="sec-home-layer" key={n}><span>{n}</span><div><strong>{h}</strong><p>{p}</p></div></div>)}</div><div className="sec-home-footer"><div className="sec-disclaimer"><strong>What is NOT protected</strong><p>Investor principal and target returns are not insured or guaranteed. Property development carries real risk. Construction insurance protects named perils, not commercial outcomes. Your capital may be lost in part or in full.</p></div><Link className="primary sec-cta-btn" to="/security">Understand the full risk framework →</Link></div></div></section>
-    <section className="section wrap mandate"><p className="eyebrow">WHY FOCUSED SCALE</p><h2>Built for velocity,<br /><em>not monumentality.</em></h2><div>{[['Plots', 'Smaller urban sites widen the sourcing field and reduce dependence on mega-plots.'], ['Programme', 'Repeatable building systems can simplify procurement and shorten decision cycles.'], ['Sales', 'A focused apartment count can support staged releases and clearer absorption tracking.'], ['Governance', 'One SPV, one budget, one programme and one controlled investor record per project.']].map(([h, p], i) => <article key={h}><span>0{i + 1}</span><h3>{h}</h3><p>{p}</p></article>)}</div></section>
     <section className="section wrap blog-preview"><div className="section-head"><div><p className="eyebrow">KNOWLEDGE BASE</p><h2>Understand before<br /><em>you invest.</em></h2></div><p>Developer insights, market analysis and investor guides — written for people who want to understand a deal before they commit to it.</p></div><div className="blog-grid">{blogPosts.map(post => <BlogCard key={post.slug} post={post} />)}</div><Link className="inline-link" to="/blog">Read all articles →</Link></section>
     <section className="pipeline-preview"><div className="wrap"><div className="section-head"><div><p className="eyebrow">2026 TO 2029 PLANNING PIPELINE</p><h2>Three projects.<br /><em>Visible stage gates.</em></h2></div><p>Early pipeline items are planning targets, not acquired assets. Their status changes only when evidence supports the next milestone.</p></div><div className="pipeline-cards">{pipelineProjects.map(p => <PipelineCard key={p.name} project={p} />)}</div><Link className="inline-link" to="/pipeline">Open the full development roadmap →</Link></div></section>
-    <section className="trust-preview"><div className="wrap"><div><p className="eyebrow">TRUST IS A PROCESS</p><h2>Verify people.<br /><em>Verify money. Verify land.</em></h2></div><div><p>Every developer, contractor, adviser and investor should pass a defined identity, ownership, sanctions, litigation and reference review before gaining access to a project.</p><Link to="/trust">Review the trust framework →</Link></div></div></section>
     <section className="access-cta" id="access"><div className="wrap"><p className="eyebrow">CONTROLLED ACCESS</p><h2>Public story.<br /><em>Private intelligence.</em></h2><p>Register interest to unlock limited investor briefs. Detailed site, cost, financial and legal information is released only after qualification and a direct call.</p><div><Link className="primary" to="/projects">View opportunities →</Link><Link to="/portal">Preview investor portal</Link></div></div></section>
   </main></Layout>
 }
@@ -384,8 +429,31 @@ function ProjectsPage() {
   const filtered = Object.values(projects).filter(p => filter === 'all' || p.status.toLowerCase() === filter)
   return <Layout><main>
     <section className="projects-page-hero"><div className="wrap"><div><p className="eyebrow">INVESTMENT OPPORTUNITIES</p><h1>Active projects.<br /><em>Transparent progress.</em></h1></div><p>Browse Formara's current development pipeline. Open projects accept new investment commitments. Funded and pipeline projects are shown for context and continuity.</p></div></section>
-    <div className="filter-bar"><div className="wrap">{[['all', 'All projects'], ['open', 'Open for investment'], ['funded', 'Funded'], ['pipeline', 'Pipeline']].map(([val, label]) => <button key={val} className={`filter-btn${filter === val ? ' active' : ''}`} onClick={() => setFilter(val)}>{label}</button>)}</div></div>
-    <section className="section wrap"><div className="project-grid">{filtered.map((p, i) => <article className="project-card" key={p.path}><img src={p.hero} alt={`${p.title} reference`} /><div><div className="card-status-row"><span className={`opp-tag opp-${p.status.toLowerCase()}`}>{p.status === 'OPEN' ? '● Open' : p.status === 'FUNDED' ? '✓ Funded' : '◎ Pipeline'}</span><small style={{ color: 'var(--muted)', fontSize: '10px' }}>{p.returnRate} · {p.duration}</small></div><h3>{p.title}<br /><em>{p.italic}</em></h3><p>{p.thesis}</p><dl><div><dt>SIZE</dt><dd>{p.area}</dd></div><div><dt>HOMES</dt><dd>{p.units}</dd></div><div><dt>GROSS TARGET</dt><dd>{p.range}</dd></div></dl><FundingMeter project={p} /><Link to={p.path}>View project details <b>→</b></Link></div></article>)}{filtered.length === 0 && <p style={{ color: 'var(--muted)', gridColumn: '1/-1', padding: '40px 0' }}>No projects match this filter at present.</p>}</div></section>
+    <div className="filter-bar"><div className="wrap">{[['all', 'All'], ['open', '● Open'], ['funded', '✓ Funded'], ['pipeline', '◎ Pipeline']].map(([val, label]) => <button key={val} className={`filter-btn${filter === val ? ' active' : ''}`} onClick={() => setFilter(val)}>{label}</button>)}</div></div>
+    <section className="section wrap">
+      <div className="campaign-grid">
+        {filtered.map(p => <article className={`campaign-card${p.status === 'OPEN' ? ' campaign-live' : ''}`} key={p.path}>
+          <div className="cc-image-wrap">
+            <img src={p.hero} alt={`${p.title} reference`} />
+            <span className={`cc-status cc-status-${p.status.toLowerCase()}`}>
+              {p.status === 'OPEN' ? <><i className="cc-live-dot" />OPEN</> : p.status === 'FUNDED' ? '✓ FUNDED' : '◎ PIPELINE'}
+            </span>
+            {p.daysLeft > 0 && <span className="cc-countdown"><strong>{p.daysLeft}</strong>d left</span>}
+          </div>
+          <div className="cc-body">
+            <div className="cc-name-row">
+              <div><small className="cc-ref">{p.eyebrow.split('·')[0].trim()}</small><h3 className="cc-title">{p.title} <em>{p.italic}</em></h3></div>
+              {p.status !== 'PIPELINE' && <div className="cc-ltv-badge"><small>LTV</small><strong>{p.ltv}</strong></div>}
+            </div>
+            <FundingMeter project={p} />
+            <Link className={`cc-cta${p.status === 'OPEN' ? ' cc-cta-invest' : ''}`} to={p.path}>
+              {p.status === 'OPEN' ? 'INVEST NOW →' : p.status === 'FUNDED' ? 'View funded project' : 'View pipeline details'}
+            </Link>
+          </div>
+        </article>)}
+        {filtered.length === 0 && <p style={{color:'var(--muted)',gridColumn:'1/-1',padding:'40px 0'}}>No projects match this filter.</p>}
+      </div>
+    </section>
     <section className="access-cta"><div className="wrap"><p className="eyebrow">READY TO INVEST?</p><h2>Register your interest.<br /><em>We respond within 48 hours.</em></h2><p>A short registration unlocks project teasers. Full data-room access follows a qualification call.</p><div><Link className="primary" to="/contact">Register interest →</Link><Link to="/how-it-works">How it works</Link></div></div></section>
   </main></Layout>
 }
