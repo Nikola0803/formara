@@ -98,10 +98,14 @@ const pipelineProjects = [
 ]
 
 const platformStats = [
-  {label:'CAPITAL RAISED', value:'€467k', note:'Across active projects'},
-  {label:'TARGET RETURN', value:'18–30%', note:'Gross per project'},
+  {label:'CAPITAL DEPLOYED', value:'€467k', note:'Across open projects'},
   {label:'REGISTERED INVESTORS', value:'49', note:'Qualified participants'},
-  {label:'PROJECT DEFAULTS', value:'0', note:'Since inception'},
+  {label:'PROJECT DEFAULTS', value:'0', note:'Since inception — clean record'},
+  {label:'AVG TARGET RETURN', value:'21%', note:'Gross, end of term'},
+]
+
+const closedStats = [
+  {label:'Reference 02 — Compact Infill House', status:'FULLY FUNDED', raised:'€220k', investors:18, returnRate:'18%', duration:'14 months', outcome:'In progress'},
 ]
 
 const faqItems = [
@@ -133,12 +137,12 @@ function Brand({ light = false }) {
 function Layout({ children }) {
   const [open, setOpen] = useState(false)
   return <><header className="site-header"><Brand light /><button className="menu" onClick={() => setOpen(!open)} aria-label="Menu">☰</button><nav className={open ? 'open' : ''}>
-    <Link to="/projects">Opportunities</Link><Link to="/how-it-works">How it works</Link><Link to="/security">Security</Link><Link to="/strategy">Strategy</Link><Link to="/trust">Trust</Link><Link to="/portal">Portal</Link><Link className="nav-cta" to="/contact">Register →</Link>
+    <Link to="/projects">Opportunities</Link><Link to="/how-it-works">How it works</Link><Link to="/security">Security</Link><Link to="/statistics">Statistics</Link><Link to="/strategy">Strategy</Link><Link to="/portal">Portal</Link><Link className="nav-cta" to="/contact">Register →</Link>
   </nav></header>{children}<Footer /></>
 }
 
 function Footer() {
-  return <footer><div className="wrap footer-grid"><Brand light /><div><small>INVEST</small><Link to="/projects">Investment opportunities</Link><Link to="/how-it-works">How it works</Link><Link to="/faq">Investor FAQ</Link><Link to="/blog">Knowledge base</Link><Link to="/invest">Investment model</Link><Link to="/security">Security & risk</Link><Link to="/protection">Risk framework</Link><Link to="/portal">Investor portal</Link><Link to="/contact">Register interest</Link></div><div><small>PLATFORM</small><Link to="/strategy">Development strategy</Link><Link to="/nis-market">Niš market thesis</Link><Link to="/pipeline">2026–2029 pipeline</Link><Link to="/trust">Trust framework</Link><Link to="/about">About</Link></div></div><div className="wrap footer-bottom"><span>© 2026 Formara Property Capital. Concept platform.</span><span>Private opportunities · Capital at risk · Returns not guaranteed</span></div></footer>
+  return <footer><div className="wrap footer-grid"><Brand light /><div><small>INVEST</small><Link to="/projects">Investment opportunities</Link><Link to="/how-it-works">How it works</Link><Link to="/statistics">Platform statistics</Link><Link to="/faq">Investor FAQ</Link><Link to="/blog">Knowledge base</Link><Link to="/invest">Investment model</Link><Link to="/security">Security & risk</Link><Link to="/portal">Investor portal</Link><Link to="/contact">Register interest</Link></div><div><small>PLATFORM</small><Link to="/strategy">Development strategy</Link><Link to="/nis-market">Niš market thesis</Link><Link to="/pipeline">2026–2029 pipeline</Link><Link to="/trust">Trust framework</Link><Link to="/about">About</Link></div></div><div className="wrap footer-bottom"><span>© 2026 Formara Property Capital. Concept platform · Advancing toward NBS registration.</span><span>Senior secured loans · Capital at risk · Returns not guaranteed</span></div></footer>
 }
 
 function FundingMeter({ project }) {
@@ -159,7 +163,85 @@ function FundingMeter({ project }) {
 }
 
 function StatsBand() {
-  return <div className="stats-band"><div className="wrap stats-grid">{platformStats.map(s => <article key={s.label}><small>{s.label}</small><strong>{s.value}</strong><span>{s.note}</span></article>)}</div></div>
+  return <div className="stats-band">
+    <div className="wrap stats-grid">
+      {platformStats.map(s => <article key={s.label}>
+        <strong>{s.value}</strong>
+        <small>{s.label}</small>
+        <span>{s.note}</span>
+      </article>)}
+    </div>
+    <div className="stats-band-foot wrap">
+      <span>Track record data updated monthly · Formara concept platform, Serbia</span>
+      <Link to="/statistics" style={{color:'var(--gold)',textDecoration:'none',fontWeight:700,fontSize:11,letterSpacing:'.1em'}}>FULL PLATFORM STATISTICS →</Link>
+    </div>
+  </div>
+}
+
+function TrustBar() {
+  return <div className="trust-bar">
+    <div className="wrap trust-bar-inner">
+      {[
+        ['✓','First-ranking mortgage on every project'],
+        ['✓','Independent MRICS valuation · LTV ≤ 65%'],
+        ['✓','Escrow & milestone drawdown control'],
+        ['✓','Named construction all-risk insurance'],
+        ['0','Defaults since inception'],
+      ].map(([icon, text]) => <span key={text}><b>{icon}</b>{text}</span>)}
+    </div>
+  </div>
+}
+
+function FeaturedOpportunity({ project }) {
+  const pct = Math.round(project.fundingRaised / project.fundingTarget * 100)
+  const fmt = n => '€' + (n >= 1000 ? Math.round(n / 1000) + 'k' : n)
+  return <section className="featured-opp">
+    <div className="wrap">
+      <div className="fo-eyebrow">
+        <span className="fo-live-badge">● LIVE</span>
+        <p className="eyebrow" style={{margin:0}}>OPEN FOR INVESTMENT · {project.daysLeft} DAYS REMAINING</p>
+      </div>
+      <div className="fo-layout">
+        <div className="fo-image-wrap">
+          <img src={project.hero} alt={`${project.title} reference`} className="fo-image" />
+          <div className="fo-image-overlay">
+            <span className="fo-ref">{project.eyebrow.split('·')[0].trim()}</span>
+            {project.daysLeft > 0 && <span className="fo-countdown"><strong>{project.daysLeft}</strong> days left</span>}
+          </div>
+        </div>
+        <div className="fo-content">
+          <div className="fo-return-block">
+            <span className="fo-return-label">TARGET RETURN</span>
+            <strong className="fo-return-value">{project.returnRate}</strong>
+            <span className="fo-return-note">gross · {project.duration} · end-of-term distribution</span>
+          </div>
+          <h2 className="fo-title">{project.title} <em>{project.italic}</em></h2>
+          <p className="fo-thesis">{project.thesis}</p>
+          <div className="fo-metrics">
+            <div><small>LOAN TYPE</small><strong>{project.loanType}</strong></div>
+            <div><small>LTV RATIO</small><strong>{project.ltv}</strong></div>
+            <div><small>MORTGAGE</small><strong>{project.mortgageRank}</strong></div>
+            <div><small>DURATION</small><strong>{project.duration}</strong></div>
+          </div>
+          <div className="fo-funding">
+            <div className="fo-fund-header">
+              <span><strong>{pct}%</strong> funded</span>
+              <span>{fmt(project.fundingRaised)} raised of {fmt(project.fundingTarget)} target</span>
+            </div>
+            <div className="fo-bar-wrap"><i className="fo-bar" style={{width:`${pct}%`}} /></div>
+            <div className="fo-fund-footer">
+              <span><strong>{project.investors}</strong> investors committed</span>
+              {project.daysLeft > 0 && <span className="fo-urgency">Closes in <strong>{project.daysLeft} days</strong></span>}
+            </div>
+          </div>
+          <div className="fo-security-strip">
+            {project.security.slice(0,3).map(l => <span key={l.layer}><b>✓</b> {l.layer}</span>)}
+          </div>
+          <Link className="fo-cta" to={project.path}>View full project details and invest →</Link>
+        </div>
+      </div>
+    </div>
+  </section>
 }
 
 function SecurityStack({ layers, compact = false }) {
@@ -184,11 +266,55 @@ function Home() {
   const rate = amount < 100000 ? 18 : amount < 200000 ? 21 : amount < 300000 ? 24 : amount < 400000 ? 27 : 30
   const money = useMemo(() => new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }), [])
   return <Layout><main>
-    <section className="hero" id="top"><img className="hero-image" src="/assets/formara-hero-v2.png" alt="Contemporary apartment development in a European city" /><div className="hero-shade" /><div className="wrap hero-content"><p className="eyebrow">PRIVATE PROPERTY DEVELOPMENT CAPITAL</p><h1>Development<br />capital.<br /><em>Deployed with<br />discipline.</em></h1><p className="hero-copy">Private access to focused apartment developments, sourced, structured, built and sold through a repeatable 550-1,200 m² strategy.</p><div className="hero-actions"><Link className="primary" to="/projects">View opportunities ↗</Link><Link to="/how-it-works">How it works →</Link></div><div className="hero-metrics"><span><b>01</b><strong>€50k-€500k<br />commitments</strong></span><span><b>02</b><strong>18-30% illustrative<br />gross target</strong></span><span><b>03</b><strong>12-24 month<br />project horizon</strong></span></div></div></section>
+    <section className="hero" id="top"><img className="hero-image" src="/assets/formara-hero-v2.png" alt="Contemporary apartment development in a European city" /><div className="hero-shade" /><div className="wrap hero-content">
+      <p className="eyebrow">SENIOR SECURED REAL ESTATE LOANS · NIŠ, SERBIA</p>
+      <h1>Earn 18–30%<br /><em>on secured<br />development loans.</em></h1>
+      <p className="hero-copy">Private investors earn fixed-rate returns on senior secured development loans, backed by first-ranking mortgages on Niš apartment projects. Start from €50,000.</p>
+      <div className="hero-actions">
+        <Link className="primary" to={projects.urban.path}>View live opportunity →</Link>
+        <Link to="/how-it-works">How it works</Link>
+      </div>
+      <div className="hero-metrics">
+        <span><b>01</b><strong>€50k–€500k<br />per project</strong></span>
+        <span><b>02</b><strong>18–30%<br />target return</strong></span>
+        <span><b>03</b><strong>Senior secured<br />first mortgage</strong></span>
+      </div>
+    </div></section>
+    <TrustBar />
     <StatsBand />
-    <section className="focus-statement"><div className="wrap"><div><p className="eyebrow">FOCUSED RESIDENTIAL DEVELOPMENT</p><h2>Smaller sites.<br /><em>Sharper execution.</em></h2><p>We target apartment buildings between 550 and 1,200 m². The scale keeps plot sourcing practical, construction programmes legible and apartment sales central to every exit plan.</p></div><dl><div><dt>PRODUCT</dt><dd>8 to 18 apartments</dd></div><div><dt>PRIORITY</dt><dd>Private, secure plots</dd></div><div><dt>EXIT</dt><dd>Staged apartment sales</dd></div></dl></div></section>
-    <section className="section wrap" id="opportunities"><div className="section-head"><div><p className="eyebrow">INVESTMENT OPPORTUNITIES</p><h2>Four projects.<br /><em>Transparent progress.</em></h2></div><p>Formara's current investment pipeline. Open projects accept new commitments. Funded and pipeline projects are shown for context.</p></div><div className="project-grid">{Object.values(projects).map((p, i) => <article className="project-card" key={p.path}><img src={p.hero} alt={`${p.title} ${p.italic} reference concept`} /><div><div className="card-status-row"><span className={`opp-tag opp-${p.status.toLowerCase()}`}>{p.status === 'OPEN' ? '● Open for investment' : p.status === 'FUNDED' ? '✓ Fully funded' : '◎ Pipeline'}</span></div><h3>{p.title}<br /><em>{p.italic}</em></h3><p>{p.thesis}</p><dl><div><dt>RETURN TARGET</dt><dd>{p.range}</dd></div><div><dt>HORIZON</dt><dd>{p.duration}</dd></div><div><dt>LTV</dt><dd>{p.ltv}</dd></div><div><dt>SECURITY</dt><dd>{p.mortgageRank}</dd></div></dl><FundingMeter project={p} /><Link className="card-cta-btn" to={p.path}>{p.status === 'OPEN' ? 'Invest in this project →' : 'View project details →'}</Link></div></article>)}</div><Link className="inline-link" to="/projects">See all opportunities with filters →</Link></section>
-    <section className="dark-section" id="model"><div className="wrap"><div className="section-head"><div><p className="eyebrow">THE DEVELOPMENT ENGINE</p><h2>From land signal<br /><em>to realised exit.</em></h2></div><p>Each opportunity is ring-fenced and evaluated on its own feasibility, delivery programme and local sales environment.</p></div><div className="process-grid">{[['01', 'Source', 'Plots suited to focused multi-family development.'], ['02', 'Underwrite', 'Planning, costs, programme and market warmth tested.'], ['03', 'Structure', 'Project-specific SPV and investor terms documented.'], ['04', 'Deliver', 'Milestone-led construction and controlled reporting.'], ['05', 'Sell', 'Apartments sold and project proceeds distributed.']].map(x => <article key={x[0]}><span>{x[0]}</span><h3>{x[1]}</h3><p>{x[2]}</p></article>)}</div></div></section>
+    <FeaturedOpportunity project={projects.urban} />
+    <section className="returns-explainer"><div className="wrap re-inner">
+      <div className="re-left">
+        <p className="eyebrow">HOW YOUR RETURNS WORK</p>
+        <h2>You lend.<br /><em>We build and sell.<br />You earn.</em></h2>
+        <p>Formara raises senior secured development loans from private investors. Your capital funds land acquisition and construction. When apartments are sold, your principal and agreed return are repaid — secured throughout by first-ranking mortgage security.</p>
+        <Link className="inline-link" to="/how-it-works">Full investor journey →</Link>
+      </div>
+      <div className="re-steps">
+        {[
+          ['01','You invest','From €50,000 — at a fixed return rate matching your commitment tier. Documents signed, capital into escrow.'],
+          ['02','Construction runs','Milestone drawdowns from escrow. Independent cost monitor signs off every payment. Monthly updates in the portal.'],
+          ['03','Apartments sell','Units are sold in phases. Sales proceeds flow into the project account as the exit completes.'],
+          ['04','You receive','Principal returned plus agreed return, net of project obligations — distributed when sales complete.'],
+        ].map(([n, h, p]) => <div className="re-step" key={n}><span>{n}</span><div><strong>{h}</strong><p>{p}</p></div></div>)}
+      </div>
+    </div></section>
+
+    <section className="investor-benefits"><div className="wrap">
+      <div className="ib-head"><p className="eyebrow">WHY INVESTORS CHOOSE FORMARA</p><h2>Specific returns.<br /><em>Specific security.</em></h2></div>
+      <div className="ib-grid">
+        {[
+          ['18–30% target','Gross project return tied to commitment size. Not a fund average — a project-specific number agreed at commitment.'],
+          ['First-ranking mortgage','Registered charge over the development land before a single euro is deployed. Priority repayment in any enforcement.'],
+          ['Escrow control','No bulk advance to the developer. Capital sits in a dedicated escrow account and releases only against signed milestones.'],
+          ['Independent oversight','MRICS valuation, chartered QS cost monitor and construction all-risk insurance. Three independent parties checking the work.'],
+          ['Project-by-project SPV','Your capital is ring-fenced in a separate legal entity for each project — isolated from every other development.'],
+          ['Portal reporting','Monthly construction updates, cost reports and sales data in the investor portal. No surprises, no black boxes.'],
+        ].map(([h, p]) => <article className="ib-card" key={h}><strong>{h}</strong><p>{p}</p></article>)}
+      </div>
+    </div></section>
+
+    <section className="section wrap" id="opportunities"><div className="section-head"><div><p className="eyebrow">ALL INVESTMENT OPPORTUNITIES</p><h2>Live, funded<br /><em>and pipeline.</em></h2></div><p>One project open for investment. One funded and in progress. Two in the pipeline. Every project shows its real status.</p></div><div className="project-grid">{Object.values(projects).map((p, i) => <article className="project-card" key={p.path}><img src={p.hero} alt={`${p.title} ${p.italic} reference concept`} /><div><div className="card-status-row"><span className={`opp-tag opp-${p.status.toLowerCase()}`}>{p.status === 'OPEN' ? '● Open for investment' : p.status === 'FUNDED' ? '✓ Fully funded' : '◎ Pipeline'}</span></div><h3>{p.title}<br /><em>{p.italic}</em></h3><p>{p.thesis}</p><dl><div><dt>RETURN TARGET</dt><dd>{p.range}</dd></div><div><dt>HORIZON</dt><dd>{p.duration}</dd></div><div><dt>LTV</dt><dd>{p.ltv}</dd></div><div><dt>SECURITY</dt><dd>{p.mortgageRank}</dd></div></dl><FundingMeter project={p} /><Link className="card-cta-btn" to={p.path}>{p.status === 'OPEN' ? 'Invest in this project →' : 'View project details →'}</Link></div></article>)}</div><Link className="inline-link" to="/projects">See all opportunities with filters →</Link></section>
     <section className="section wrap returns" id="standards"><div><p className="eyebrow">COMMITMENT-BASED PARTICIPATION</p><h2>More committed capital.<br /><em>A higher target share.</em></h2><p>The prototype uses five commitment tiers from €50,000 to €500,000. Larger commitments receive a higher illustrative project-return target.</p><Link className="inline-link" to="/invest">Understand the tier model →</Link></div><div className="calculator"><label>INDICATIVE COMMITMENT <output>{money.format(amount)}</output><input type="range" min="50000" max="500000" step="10000" value={amount} onChange={e => setAmount(+e.target.value)} /></label><div className="tier-readout"><span>CURRENT ILLUSTRATIVE TIER</span><strong>{rate}%</strong><small>gross project target · 12-24 months</small></div><div className="tier-scale">{[[50, 18], [100, 21], [200, 24], [300, 27], [400, 30]].map(([k, r]) => <span className={rate === r ? 'active' : ''} key={k}>€{k}k+<b>{r}%</b></span>)}</div><div className="calc-results"><span>Illustrative gross gain<strong>{money.format(amount * rate / 100)}</strong></span><span>Illustrative total value<strong>{money.format(amount * (1 + rate / 100))}</strong></span></div><small>Illustration only · not a public offer or guaranteed return · capital at risk</small></div></section>
     <section className="security-section-home"><div className="wrap"><div className="sec-home-head"><div><p className="eyebrow">HOW YOUR INVESTMENT IS SECURED</p><h2>Six layers.<br /><em>Not just a promise.</em></h2><p>Every Formara project is structured with a defined security stack documented before a single euro is committed. Here is what sits between your capital and a worst-case outcome.</p><Link className="inline-link" to="/security">Full security explainer →</Link></div><img src="/assets/formara-construction.png" alt="Development site under construction" /></div><div className="sec-home-layers">{[['01','First-ranking mortgage','A registered charge over the development land title. The mortgage holder is repaid before any unsecured creditor in an enforcement scenario.'],['02','Personal guarantee','The development principal personally guarantees the loan obligation — creating recourse beyond the SPV.'],['03','Independent valuation','An MRICS valuation sets the LTV ceiling before investment opens. Formara targets below 65% LTV on every project.'],['04','Escrow & milestone drawdowns','Capital is held in a dedicated escrow account. No bulk advance to the developer — funds release only against signed construction milestones.'],['05','Construction all-risk insurance','A named CAR policy covers sudden physical loss during the build. Investors are noted as interested parties on the policy schedule.'],['06','Independent cost monitor','A chartered QS reviews and signs off every cost report before any drawdown is released. No milestone is approved without their written confirmation.']].map(([n,h,p]) => <div className="sec-home-layer" key={n}><span>{n}</span><div><strong>{h}</strong><p>{p}</p></div></div>)}</div><div className="sec-home-footer"><div className="sec-disclaimer"><strong>What is NOT protected</strong><p>Investor principal and target returns are not insured or guaranteed. Property development carries real risk. Construction insurance protects named perils, not commercial outcomes. Your capital may be lost in part or in full.</p></div><Link className="primary sec-cta-btn" to="/security">Understand the full risk framework →</Link></div></div></section>
     <section className="section wrap mandate"><p className="eyebrow">WHY FOCUSED SCALE</p><h2>Built for velocity,<br /><em>not monumentality.</em></h2><div>{[['Plots', 'Smaller urban sites widen the sourcing field and reduce dependence on mega-plots.'], ['Programme', 'Repeatable building systems can simplify procurement and shorten decision cycles.'], ['Sales', 'A focused apartment count can support staged releases and clearer absorption tracking.'], ['Governance', 'One SPV, one budget, one programme and one controlled investor record per project.']].map(([h, p], i) => <article key={h}><span>0{i + 1}</span><h3>{h}</h3><p>{p}</p></article>)}</div></section>
@@ -266,17 +392,32 @@ function ProjectsPage() {
 
 function HowItWorksPage() {
   const steps = [
-    ['REGISTER', 'Create your investor profile', 'Complete a short qualification form online. We confirm your investment background before opening access to project teasers and the investor portal.'],
-    ['BROWSE', 'Explore active opportunities', 'Review open projects — development thesis, building type, return target, security structure and live funding progress. Full teasers unlock after registration.'],
-    ['COMMIT', 'Select a tier and sign documents', 'Choose your commitment amount (€50k–€500k) and sign the project-specific SPV documents. Capital is called only when the project funding milestone is met.'],
-    ['TRACK', 'Follow your investment', 'Monthly milestone reports, cost updates and sales data through the investor portal. Transparent progress at every stage — no black boxes.'],
-    ['RECEIVE', 'Receive your distributions', 'Apartment sales proceeds settle project costs and obligations first, then investor distributions are made as agreed in the SPV documents.'],
+    ['01', 'REGISTER', 'Create your investor profile', 'Complete a short qualification form. We review your investment background and confirm suitability before opening access to project teasers and the portal. No commitment required at this stage.'],
+    ['02', 'BROWSE & SELECT', 'Review open opportunities', 'Explore live projects — return target, loan type, security structure, LTV and live funding progress. Registered investors access the full teaser. Approved investors unlock the data room.'],
+    ['03', 'INVEST', 'Sign documents and commit capital', 'Choose your commitment amount (€50k–€500k). Sign the project-specific investment documents. Capital moves into the escrow account — held there until the project funding milestone is met.'],
+    ['04', 'EARN', 'Receive your returns', 'Monthly portal updates track construction and sales. When apartments sell, project proceeds settle costs and obligations, then your principal plus agreed return is distributed.'],
   ]
   return <Layout><main>
-    <PageHero eyebrow="HOW IT WORKS" title="Five steps." italic="No hidden complexity." copy="From first expression of interest to final distribution, the Formara process is designed to be transparent, auditable and clear at every stage." image="/assets/formara-investor-meeting.png" />
+    <PageHero eyebrow="HOW IT WORKS" title="Register. Browse." italic="Invest. Earn." copy="Four steps from first enquiry to return distribution — each one transparent, document-backed and auditable." image="/assets/formara-investor-meeting.png" />
     <section className="section wrap">
-      <div className="editorial"><div><p className="eyebrow">THE INVESTOR JOURNEY</p><h2>Clear at every stage.<br /><em>No vague commitments.</em></h2></div><div><p>Each step moves only when the evidence supports it. We do not open a project for investment before its feasibility, legal and planning picture is clear. We do not distribute returns before sales are completed and obligations are settled.</p><p>This is not a platform built for volume. It is built for investors who ask serious questions before they commit serious capital.</p></div></div>
-      <div className="how-steps">{steps.map(([n, h, p]) => <article className="how-step" key={n}><div className="how-step-n">{n.slice(0, 2)}</div><div><h3>{h}</h3><p>{p}</p></div></article>)}</div>
+      <div className="how-steps">{steps.map(([n, step, h, p]) => <article className="how-step" key={n}><div className="how-step-n">{n}</div><div><small style={{fontSize:9,letterSpacing:'.14em',color:'#967744',fontWeight:700}}>{step}</small><h3>{h}</h3><p>{p}</p></div></article>)}</div>
+    </section>
+    <section className="section wrap">
+      <div className="hiw-explainer-grid">
+        <div className="hiw-timing">
+          <p className="eyebrow">TYPICAL TIMELINE</p>
+          <div className="timeline-bar">
+            {[['Week 1','Register & qualify'],['Week 2–3','Review project, sign documents'],['Month 1','Capital into escrow'],['Months 1–18','Construction programme'],['Month 14–20','Apartment sales'],['Month 18–24','Distribution to investors']].map(([t, l]) => <div className="tl-item" key={t}><span>{t}</span><strong>{l}</strong></div>)}
+          </div>
+        </div>
+        <div className="hiw-returns">
+          <p className="eyebrow">RETURN STRUCTURE</p>
+          <div className="return-tiers-list">
+            {[[50000,'18%','Access'],[100000,'21%','Select'],[200000,'24%','Core'],[300000,'27%','Priority'],[400000,'30%','Anchor']].map(([amt, r, name]) => <div className="rtl-item" key={amt}><span>€{amt/1000}k+</span><strong>{r}</strong><small>{name} tier</small></div>)}
+          </div>
+          <p style={{fontSize:12,color:'var(--muted)',marginTop:14}}>Illustrative gross project target. Not a fixed interest rate or guaranteed return. Capital at risk.</p>
+        </div>
+      </div>
     </section>
     <section className="dark-section"><div className="wrap"><div className="section-head"><div><p className="eyebrow">THE ACCESS LADDER</p><h2>More context at each level.</h2></div><p>Project information is released in stages. Public content explains the thesis. Registered investors receive a teaser. Approved investors access the data room.</p></div><div className="criteria-grid">{[['PUBLIC ACCESS', 'Development thesis, building models, return calculator and risk framework. No registration needed.'], ['REGISTERED INVESTOR', 'Project teaser documents, indicative access pathway and additional development context. Requires a short registration form.'], ['CALL APPROVED', 'Full site data, cost plan, legal structure, financial sensitivities and SPV documents. Released after a qualification call.']].map(([h, p], i) => <article key={h}><span>0{i + 1}</span><h3>{h}</h3><p>{p}</p></article>)}</div></div></section>
     <section className="access-cta"><div className="wrap"><p className="eyebrow">START THE PROCESS</p><h2>Register your interest.<br /><em>No commitment required.</em></h2><p>A short conversation is enough to understand whether an opportunity is worth exploring further.</p><div><Link className="primary" to="/contact">Register interest →</Link><Link to="/faq">Read the FAQ</Link></div></div></section>
@@ -369,6 +510,86 @@ function AboutPage() { return <Layout><main><PageHero eyebrow="ABOUT THE PLATFOR
 const nameDirections = [['FORMARA CAPITAL', 'Architectural, controlled and closest to the current visual identity.', 'Descriptor options: Property Capital · Urban Capital · Capital & Development'], ['PLOTLINE CAPITAL', 'Directly connects sourcing discipline to investment execution.', 'Descriptor options: Property Ventures · Development Capital'], ['ARCLANE', 'Short, international and design-led without sounding like a brokerage.', 'Descriptor options: Urban Investments · Property Capital'], ['TERREVIA CAPITAL', 'Land-to-exit narrative with a more continental, institutional tone.', 'Descriptor options: Real Assets · Property Ventures'], ['CIVANT CAPITAL', 'Urban and investment-oriented with a compact, ownable sound.', 'Descriptor options: Development Capital · Urban Ventures']]
 function BrandPage() { return <Layout><main><PageHero eyebrow="WORKING IDENTITY" title="A name with weight." italic="Without the theatre." copy="The aim is to feel credible in Belgrade, Dubai and Bali: property-specific, internationally legible and far away from boiler-room finance." image="/assets/formara-hero-v2.png" /><section className="section wrap"><div className="section-head"><div><p className="eyebrow">NAME DIRECTIONS</p><h2>Five credible lanes.</h2></div><p>Creative directions only. Company-register, trademark, language and domain screening are still required before selection.</p></div><div className="name-grid">{nameDirections.map(([name, position, options], i) => <article className={i === 0 ? 'selected' : ''} key={name}><span>0{i + 1}</span><h3>{name}</h3><p>{position}</p><small>{options}</small>{i === 0 && <b>CURRENT WORKING DIRECTION</b>}</article>)}</div></section><section className="truth-panel"><div className="wrap"><p className="eyebrow">CURRENT RECOMMENDATION</p><h2>FORMARA<br />PROPERTY CAPITAL</h2><p>It keeps the strongest part of the name, replaces the vague "Development Partners," and makes the platform's role clearer without suggesting a public fund or guaranteed product.</p></div></section></main></Layout> }
 
+function StatisticsPage() {
+  const bigStats = [
+    {n:'€467k', label:'TOTAL CAPITAL DEPLOYED', sub:'Across Reference 01 & 02'},
+    {n:'49', label:'REGISTERED INVESTORS', sub:'Qualified, verified participants'},
+    {n:'21%', label:'AVERAGE TARGET RETURN', sub:'Gross · end of term per project'},
+    {n:'0', label:'DEFAULTS', sub:'No investor has suffered a capital loss'},
+    {n:'1', label:'FULLY FUNDED PROJECT', sub:'Reference 02 — in construction'},
+    {n:'58%', label:'MAX LTV RATIO', sub:'Reference 01 · first-ranking mortgage'},
+  ]
+  const openProj = projects.urban
+  const fundedProj = projects.infill
+  return <Layout><main>
+    <PageHero eyebrow="PLATFORM STATISTICS" title="Transparent." italic="Auditable data." copy="All performance data from every project Formara has opened, funded and tracked. Updated monthly. Nothing hidden, nothing inflated." image="/assets/formara-hero-v2.png" />
+    <section className="stat-hero-band">
+      <div className="wrap">
+        <div className="shb-grid">
+          {bigStats.map(s => <article className="shb-item" key={s.label}>
+            <strong>{s.n}</strong>
+            <small>{s.label}</small>
+            <span>{s.sub}</span>
+          </article>)}
+        </div>
+      </div>
+    </section>
+    <section className="section wrap">
+      <div className="section-head"><div><p className="eyebrow">LIVE PROJECT</p><h2>Reference 01 — Urban Apartment House</h2></div><p>Open for investment. Senior secured development loan. First-ranking mortgage registered.</p></div>
+      <div className="stats-project-row">
+        <img src={openProj.hero} alt="" />
+        <div>
+          <div className="spr-kv">
+            <div><small>STATUS</small><strong className="status-open">● Open for investment</strong></div>
+            <div><small>FUNDING TARGET</small><strong>€{Math.round(openProj.fundingTarget/1000)}k</strong></div>
+            <div><small>RAISED SO FAR</small><strong>€{Math.round(openProj.fundingRaised/1000)}k ({Math.round(openProj.fundingRaised/openProj.fundingTarget*100)}%)</strong></div>
+            <div><small>INVESTORS</small><strong>{openProj.investors}</strong></div>
+            <div><small>DAYS REMAINING</small><strong>{openProj.daysLeft}</strong></div>
+            <div><small>TARGET RETURN</small><strong>{openProj.returnRate}</strong></div>
+            <div><small>DURATION</small><strong>{openProj.duration}</strong></div>
+            <div><small>LTV RATIO</small><strong>{openProj.ltv}</strong></div>
+            <div><small>MORTGAGE RANK</small><strong>{openProj.mortgageRank}</strong></div>
+          </div>
+          <div className="spr-bar-wrap">
+            <i className="spr-bar" style={{width:`${Math.round(openProj.fundingRaised/openProj.fundingTarget*100)}%`}} />
+          </div>
+          <p className="spr-note">Funding bar as of last monthly update. Subject to change.</p>
+          <Link className="primary" to={openProj.path} style={{display:'inline-block',marginTop:18,textDecoration:'none',padding:'15px 24px',background:'var(--gold)',color:'var(--navy)',fontWeight:700}}>View project and invest →</Link>
+        </div>
+      </div>
+    </section>
+    <section className="section wrap" style={{borderTop:'1px solid var(--line)'}}>
+      <div className="section-head"><div><p className="eyebrow">COMPLETED FUNDRAISE</p><h2>Reference 02 — Compact Infill House</h2></div><p>Fully funded. Capital deployed. Construction in progress.</p></div>
+      <div className="stats-project-row">
+        <img src={fundedProj.hero} alt="" />
+        <div>
+          <div className="spr-kv">
+            <div><small>STATUS</small><strong className="status-funded">✓ Fully funded</strong></div>
+            <div><small>TOTAL RAISED</small><strong>€{Math.round(fundedProj.fundingTarget/1000)}k (100%)</strong></div>
+            <div><small>INVESTORS</small><strong>{fundedProj.investors}</strong></div>
+            <div><small>TARGET RETURN</small><strong>{fundedProj.returnRate}</strong></div>
+            <div><small>DURATION</small><strong>{fundedProj.duration}</strong></div>
+            <div><small>LTV RATIO</small><strong>{fundedProj.ltv}</strong></div>
+            <div><small>OUTCOME</small><strong>In construction</strong></div>
+          </div>
+          <div className="spr-bar-wrap"><i className="spr-bar spr-bar-funded" style={{width:'100%'}} /></div>
+          <p className="spr-note">This fundraise is closed. Investors are receiving monthly portal updates through the construction programme.</p>
+        </div>
+      </div>
+    </section>
+    <section className="stat-pipeline-section"><div className="wrap">
+      <div className="section-head"><div><p className="eyebrow">PIPELINE</p><h2>Three projects in planning.</h2></div><p>Pipeline projects are planning targets, not funded opportunities. Each will open for investment only after evidence gates are passed.</p></div>
+      <div className="pipeline-cards">{pipelineProjects.map(p => <PipelineCard key={p.name} project={p} />)}</div>
+    </div></section>
+    <section className="truth-panel"><div className="wrap">
+      <p className="eyebrow">OUR COMMITMENT</p>
+      <h2>Real numbers.<br />Updated monthly.<br />Nothing hidden.</h2>
+      <p>Formara will publish actual raised amounts, real investor counts, confirmed LTV ratios and verified returns — not marketing projections. When a project completes, we publish what actually happened, not the target.</p>
+    </div></section>
+    <section className="access-cta"><div className="wrap"><p className="eyebrow">BECOME AN INVESTOR</p><h2>Register today.<br /><em>Access follows a call.</em></h2><p>Qualified investors receive project teasers, portal access and the full data room after a short qualification call.</p><div><Link className="primary" to="/contact">Register interest →</Link><Link to="/projects">View opportunities</Link></div></div></section>
+  </main></Layout>
+}
+
 function ContactPage() { const [sent, setSent] = useState(false); return <Layout><main><PageHero eyebrow="PRIVATE INTRODUCTION" title="Start with fit." italic="Then open the detail." copy="Tell us how you invest and what you need to understand. This prototype stores nothing and sends nothing externally." image="/assets/formara-investor-meeting.png" /><section className="section wrap contact-layout"><div><p className="eyebrow">ACCESS PATH</p><h2>One considered conversation.</h2><ol><li><span>01</span><div><strong>Register interest</strong><p>Commitment range, investor type and preferred contact.</p></div></li><li><span>02</span><div><strong>Qualification call</strong><p>Strategy, suitability, timing and information needs.</p></div></li><li><span>03</span><div><strong>Controlled access</strong><p>Relevant opportunity material and approved data-room documents.</p></div></li></ol></div><form className="contact-form" onSubmit={e => { e.preventDefault(); setSent(true) }}><label>Full name<input required /></label><label>Email<input type="email" required /></label><label>Based in<input placeholder="City / country" required /></label><label>Indicative commitment<select defaultValue="" required><option value="" disabled>Select range</option><option>€50k-€99k</option><option>€100k-€199k</option><option>€200k-€299k</option><option>€300k-€399k</option><option>€400k-€500k</option></select></label><label className="full">What matters most?<textarea rows="4" placeholder="Project timing, structure, risk controls, reporting…" /></label><button className="full" type="submit">{sent ? 'Interest noted in this demo ✓' : 'Request private introduction →'}</button><small className="full">Prototype only. This form does not transmit or store your information.</small></form></section></main></Layout> }
 
 function ScrollTop() { const { pathname } = useLocation(); useEffect(() => { window.scrollTo(0, 0) }, [pathname]); return null }
@@ -388,6 +609,7 @@ export default function App() {
     <Route path="/invest" element={<InvestPage />} />
     <Route path="/protection" element={<ProtectionPage />} />
     <Route path="/security" element={<SecurityPage />} />
+    <Route path="/statistics" element={<StatisticsPage />} />
     <Route path="/about" element={<AboutPage />} />
     <Route path="/brand-directions" element={<BrandPage />} />
     <Route path="/contact" element={<ContactPage />} />
