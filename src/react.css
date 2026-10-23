@@ -112,7 +112,7 @@ h1{font-size:clamp(46px,6vw,82px);letter-spacing:-.045em}h2{font-size:clamp(34px
 .fm-pipeline span{font-size:12px;color:var(--muted);max-width:280px;line-height:1.5}
 
 /* ── Campaign grid ── */
-.campaigns-section{background:var(--paper);padding-block:90px;border-top:1px solid var(--line)}
+.campaigns-section{background:var(--paper);padding-block:72px;border-top:1px solid var(--line)}
 .campaigns-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;flex-wrap:wrap;gap:16px}
 .campaigns-head h2{font-size:clamp(28px,3.5vw,44px);margin:0}
 .campaigns-filter-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -121,7 +121,25 @@ h1{font-size:clamp(46px,6vw,82px);letter-spacing:-.045em}h2{font-size:clamp(34px
 .camp-filter-funded{border-color:#1e4070;color:#1e4070;background:#ecf0f5}
 .camp-filter-pipe{border-color:var(--muted)}
 .camp-all-link{font-size:11px;font-weight:700;color:var(--ink);text-decoration:none;letter-spacing:.06em;border-bottom:1px solid currentColor}
-.campaign-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.campaign-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+
+/* ── Return rate hero strip (dominant element on every card) ── */
+.cc-rate-hero{background:var(--navy);padding:18px 20px;display:flex;align-items:center;gap:0;flex-wrap:wrap;border-bottom:3px solid var(--gold)}
+.cc-rate-value{font:700 56px/1 var(--display);color:var(--gold);letter-spacing:-.04em;margin-right:14px;flex-shrink:0}
+.cc-rate-label{font-size:10px;letter-spacing:.1em;color:#8090a0;text-transform:uppercase;flex:1;min-width:80px;margin-top:6px}
+.cc-rate-meta{display:flex;gap:14px;width:100%;margin-top:12px;padding-top:10px;border-top:1px solid #1e3040}
+.cc-rate-meta>span{display:flex;flex-direction:column;gap:2px}
+.cc-rate-meta small{font-size:7px;letter-spacing:.14em;color:#6e8496}
+.cc-rate-meta strong{font-size:12px;font-weight:700;color:#fff}
+.cc-progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:7px}
+.cc-progress-label strong{color:var(--ink)}
+.cc-bar-wrap{height:12px;background:#e5e4df;border-radius:6px;overflow:hidden;margin-bottom:10px}
+.cc-bar{display:block;height:100%;background:var(--gold);border-radius:6px}
+.cc-foot{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
+.cc-foot strong{color:var(--ink)}
+.cc-urgency{color:#c0392b;font-weight:600}
+.cc-funded-tag{color:#2a6e3a;font-weight:700}
+.cc-pipe-note{font-size:11px;color:var(--muted);background:var(--paper);padding:10px 12px;border-left:2px solid #c9c8c2;margin-bottom:4px;line-height:1.5}
 
 /* ── Campaign card ── */
 .campaign-card{background:#fff;border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .2s}
@@ -151,5 +169,6 @@ h1{font-size:clamp(46px,6vw,82px);letter-spacing:-.045em}h2{font-size:clamp(34px
 .cc-cta-invest{background:var(--gold);color:var(--navy)}
 .cc-cta-invest:hover{background:#b8934a}
 
-@media(max-width:900px){.campaign-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:1400px){.cc-rate-value{font-size:46px}}
+@media(max-width:1200px){.campaign-grid{grid-template-columns:repeat(2,1fr)}.cc-rate-value{font-size:52px}}
 @media(max-width:620px){.campaign-grid{grid-template-columns:1fr}.cc-image-wrap img{height:230px}}

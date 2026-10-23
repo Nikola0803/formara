@@ -278,6 +278,54 @@ function BlogCard({ post }) {
   </Link>
 }
 
+function CampaignCard({ project: p }) {
+  const isOpen = p.status === 'OPEN', isFunded = p.status === 'FUNDED', isPipe = p.status === 'PIPELINE'
+  const fmt = n => '€' + (n >= 1000 ? Math.round(n / 1000) + 'k' : n)
+  const pct = !isPipe ? Math.round(p.fundingRaised / p.fundingTarget * 100) : 0
+  return <article className={`campaign-card${isOpen ? ' campaign-live' : ''}`}>
+    <div className="cc-image-wrap">
+      <img src={p.hero} alt={`${p.title} reference`} />
+      <span className={`cc-status cc-status-${p.status.toLowerCase()}`}>
+        {isOpen ? <><i className="cc-live-dot" />LIVE</> : isFunded ? '✓ FUNDED' : '◎ PIPELINE'}
+      </span>
+      {p.daysLeft > 0 && <span className="cc-countdown"><strong>{p.daysLeft}</strong>d</span>}
+    </div>
+    <div className="cc-rate-hero">
+      <span className="cc-rate-value">{p.returnRate}</span>
+      <span className="cc-rate-label">{isPipe ? 'est. return · target · gross' : 'target return · gross · end of term'}</span>
+      <div className="cc-rate-meta">
+        <span><small>TERM</small><strong>{p.duration}</strong></span>
+        {!isPipe && <span><small>LTV</small><strong>{p.ltv}</strong></span>}
+        <span><small>LOAN</small><strong>Senior secured</strong></span>
+      </div>
+    </div>
+    <div className="cc-body">
+      <div className="cc-name-row">
+        <div><small className="cc-ref">{p.eyebrow.split('·')[0].trim()}</small><h3 className="cc-title">{p.title} <em>{p.italic}</em></h3></div>
+      </div>
+      {isPipe ? (
+        <div className="cc-pipe-note">◎ Opens when feasibility &amp; planning gates pass · Est. {p.badges[0].replace('PIPELINE ', '')}</div>
+      ) : (
+        <>
+          <div className="cc-progress-label">
+            <span><strong>{pct}%</strong> funded · {fmt(p.fundingRaised)} raised</span>
+            <span>{fmt(p.fundingTarget)} target</span>
+          </div>
+          <div className="cc-bar-wrap"><i className="cc-bar" style={{width:`${pct}%`}} /></div>
+          <div className="cc-foot">
+            {p.investors > 0 && <span><strong>{p.investors}</strong> investors</span>}
+            {p.daysLeft > 0 && <span className="cc-urgency">⏱ <strong>{p.daysLeft} days</strong> left</span>}
+            {isFunded && <span className="cc-funded-tag">✓ Fully funded</span>}
+          </div>
+        </>
+      )}
+      <Link className={`cc-cta${isOpen ? ' cc-cta-invest' : ''}`} to={p.path}>
+        {isOpen ? 'INVEST NOW →' : isFunded ? 'View funded project →' : 'View pipeline details →'}
+      </Link>
+    </div>
+  </article>
+}
+
 function Home() {
   const [amount, setAmount] = useState(250000)
   const rate = amount < 100000 ? 18 : amount < 200000 ? 21 : amount < 300000 ? 24 : amount < 400000 ? 27 : 30
@@ -299,8 +347,7 @@ function Home() {
     </div></section>
     <TrustBar />
     <StatsBand />
-    <FeaturedOpportunity project={projects.urban} />
-    <section className="campaigns-section" id="all-campaigns" style={{background:'var(--paper)',paddingBlock:'80px'}}><div className="wrap">
+    <section className="campaigns-section" id="all-campaigns"><div className="wrap">
       <div className="campaigns-head">
         <div><p className="eyebrow">ALL INVESTMENT CAMPAIGNS</p><h2>Live, funded<br /><em>and pipeline.</em></h2></div>
         <div className="campaigns-filter-row">
@@ -310,25 +357,7 @@ function Home() {
           <Link to="/projects" className="camp-all-link">Filter →</Link>
         </div>
       </div>
-      <div className="campaign-grid">{Object.values(projects).map(p => <article className={`campaign-card${p.status === 'OPEN' ? ' campaign-live' : ''}`} key={p.path + '-home'}>
-        <div className="cc-image-wrap">
-          <img src={p.hero} alt={`${p.title} reference`} />
-          <span className={`cc-status cc-status-${p.status.toLowerCase()}`}>
-            {p.status === 'OPEN' ? <><i className="cc-live-dot" />OPEN</> : p.status === 'FUNDED' ? '✓ FUNDED' : '◎ PIPELINE'}
-          </span>
-          {p.daysLeft > 0 && <span className="cc-countdown"><strong>{p.daysLeft}</strong>d left</span>}
-        </div>
-        <div className="cc-body">
-          <div className="cc-name-row">
-            <div><small className="cc-ref">{p.eyebrow.split('·')[0].trim()}</small><h3 className="cc-title">{p.title} <em>{p.italic}</em></h3></div>
-            {p.status !== 'PIPELINE' && <div className="cc-ltv-badge"><small>LTV</small><strong>{p.ltv}</strong></div>}
-          </div>
-          <FundingMeter project={p} />
-          <Link className={`cc-cta${p.status === 'OPEN' ? ' cc-cta-invest' : ''}`} to={p.path}>
-            {p.status === 'OPEN' ? 'INVEST NOW →' : p.status === 'FUNDED' ? 'View funded project' : 'View pipeline details'}
-          </Link>
-        </div>
-      </article>)}</div>
+      <div className="campaign-grid">{Object.values(projects).map(p => <CampaignCard key={p.path + '-home'} project={p} />)}</div>
     </div></section>
 
     <section className="returns-explainer"><div className="wrap re-inner">
@@ -432,25 +461,7 @@ function ProjectsPage() {
     <div className="filter-bar"><div className="wrap">{[['all', 'All'], ['open', '● Open'], ['funded', '✓ Funded'], ['pipeline', '◎ Pipeline']].map(([val, label]) => <button key={val} className={`filter-btn${filter === val ? ' active' : ''}`} onClick={() => setFilter(val)}>{label}</button>)}</div></div>
     <section className="section wrap">
       <div className="campaign-grid">
-        {filtered.map(p => <article className={`campaign-card${p.status === 'OPEN' ? ' campaign-live' : ''}`} key={p.path}>
-          <div className="cc-image-wrap">
-            <img src={p.hero} alt={`${p.title} reference`} />
-            <span className={`cc-status cc-status-${p.status.toLowerCase()}`}>
-              {p.status === 'OPEN' ? <><i className="cc-live-dot" />OPEN</> : p.status === 'FUNDED' ? '✓ FUNDED' : '◎ PIPELINE'}
-            </span>
-            {p.daysLeft > 0 && <span className="cc-countdown"><strong>{p.daysLeft}</strong>d left</span>}
-          </div>
-          <div className="cc-body">
-            <div className="cc-name-row">
-              <div><small className="cc-ref">{p.eyebrow.split('·')[0].trim()}</small><h3 className="cc-title">{p.title} <em>{p.italic}</em></h3></div>
-              {p.status !== 'PIPELINE' && <div className="cc-ltv-badge"><small>LTV</small><strong>{p.ltv}</strong></div>}
-            </div>
-            <FundingMeter project={p} />
-            <Link className={`cc-cta${p.status === 'OPEN' ? ' cc-cta-invest' : ''}`} to={p.path}>
-              {p.status === 'OPEN' ? 'INVEST NOW →' : p.status === 'FUNDED' ? 'View funded project' : 'View pipeline details'}
-            </Link>
-          </div>
-        </article>)}
+        {filtered.map(p => <CampaignCard key={p.path} project={p} />)}
         {filtered.length === 0 && <p style={{color:'var(--muted)',gridColumn:'1/-1',padding:'40px 0'}}>No projects match this filter.</p>}
       </div>
     </section>
