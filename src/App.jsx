@@ -142,7 +142,57 @@ function Layout({ children }) {
 }
 
 function Footer() {
-  return <footer><div className="wrap footer-grid"><Brand light /><div><small>INVEST</small><Link to="/projects">Investment opportunities</Link><Link to="/how-it-works">How it works</Link><Link to="/statistics">Platform statistics</Link><Link to="/faq">Investor FAQ</Link><Link to="/blog">Knowledge base</Link><Link to="/invest">Investment model</Link><Link to="/security">Security & risk</Link><Link to="/portal">Investor portal</Link><Link to="/contact">Register interest</Link></div><div><small>PLATFORM</small><Link to="/strategy">Development strategy</Link><Link to="/nis-market">Niš market thesis</Link><Link to="/pipeline">2026–2029 pipeline</Link><Link to="/trust">Trust framework</Link><Link to="/about">About</Link></div></div><div className="wrap footer-bottom"><span>© 2026 Formara Property Capital. Concept platform · Advancing toward NBS registration.</span><span>Senior secured loans · Capital at risk · Returns not guaranteed</span></div></footer>
+  return <footer className="site-footer">
+    <div className="footer-top wrap">
+      <div className="footer-brand-col">
+        <Brand light />
+        <p className="footer-tagline">Senior secured real estate loans. Private investors earn 18–30% on development projects in Niš, Serbia — backed by first-ranking mortgages.</p>
+        <div className="footer-trust-chips">
+          <span>✓ First-ranking mortgage</span>
+          <span>✓ Independent MRICS valuation</span>
+          <span>✓ Escrow &amp; milestone drawdowns</span>
+          <span>0 defaults since inception</span>
+        </div>
+      </div>
+      <div className="footer-links-col">
+        <small>INVEST</small>
+        <Link to="/projects">Investment opportunities</Link>
+        <Link to="/how-it-works">How it works</Link>
+        <Link to="/invest">Commitment tiers</Link>
+        <Link to="/statistics">Platform statistics</Link>
+        <Link to="/faq">Investor FAQ</Link>
+        <Link to="/portal">Investor portal</Link>
+      </div>
+      <div className="footer-links-col">
+        <small>SECURITY</small>
+        <Link to="/security">Security &amp; risk framework</Link>
+        <Link to="/security#mortgage">First-ranking mortgage</Link>
+        <Link to="/security#escrow">Escrow structure</Link>
+        <Link to="/security#valuation">Independent valuation</Link>
+        <Link to="/security#insurance">Construction insurance</Link>
+      </div>
+      <div className="footer-links-col">
+        <small>PLATFORM</small>
+        <Link to="/strategy">Development strategy</Link>
+        <Link to="/pipeline">2026–2029 pipeline</Link>
+        <Link to="/blog">Knowledge base</Link>
+        <Link to="/about">About Formara</Link>
+        <Link to="/contact">Register interest</Link>
+      </div>
+    </div>
+    <div className="footer-security-strip wrap">
+      {[
+        ['§','Senior secured loans only — no equity, no mezzanine, no unsecured positions.'],
+        ['M','Independent MRICS valuation on every project. LTV ceiling: 65%.'],
+        ['E','Escrow account per project. Capital releases on milestone sign-off, not on request.'],
+        ['Q','Chartered QS cost monitor reviews every drawdown before release.'],
+      ].map(([icon, text]) => <div key={icon} className="fss-chip"><span>{icon}</span><p>{text}</p></div>)}
+    </div>
+    <div className="footer-bottom wrap">
+      <span>© 2026 Formara Property Capital. Concept platform advancing toward NBS registration.</span>
+      <span>Capital at risk · Returns not guaranteed · Senior secured loans only · Not a public offer</span>
+    </div>
+  </footer>
 }
 
 function FundingMeter({ project, large = false }) {
@@ -358,6 +408,31 @@ function Home() {
         </div>
       </div>
       <div className="campaign-grid">{Object.values(projects).map(p => <CampaignCard key={p.path + '-home'} project={p} />)}</div>
+    </div></section>
+
+    <section className="trust-proof-section"><div className="wrap">
+      <div className="tp-head"><p className="eyebrow">HOW YOUR CAPITAL IS PROTECTED</p><h2>Six layers. Every project.<br /><em>No exceptions.</em></h2><p>Each layer is documented in the project data room before investment opens. Security claims without evidence are not security — they are marketing.</p></div>
+      <div className="tp-grid">
+        {[
+          {n:'01',icon:'§',title:'First-ranking mortgage',sub:'LEGAL SECURITY',body:'A registered charge over the development land title filed at the land registry. In enforcement, mortgage proceeds are applied to investors first — before any unsecured creditor.'},
+          {n:'02',icon:'G',title:'Personal guarantee',sub:'RECOURSE SECURITY',body:'The development principal personally guarantees the loan. Investor recourse extends beyond the SPV to the developer\'s personal assets.'},
+          {n:'03',icon:'V',title:'Independent MRICS valuation',sub:'LOAN CONTROL',body:'A qualified independent surveyor values every site before investment opens. Formara targets a maximum LTV of 65% — no exceptions.'},
+          {n:'04',icon:'E',title:'Escrow & milestone drawdowns',sub:'CAPITAL CONTROL',body:'No bulk advance to developers. Capital sits in a dedicated project escrow and releases only against signed construction milestones.'},
+          {n:'05',icon:'I',title:'Construction all-risk insurance',sub:'PHYSICAL RISK',body:'A named CAR policy covers sudden physical loss to the works. Investors are noted as interested parties on every policy schedule.'},
+          {n:'06',icon:'Q',title:'Independent cost monitor',sub:'DELIVERY CONTROL',body:'A chartered QS reviews and approves every cost report before a drawdown is released. No milestone is signed off without their written confirmation.'},
+        ].map(l => <div className="tp-card" key={l.n}>
+          <div className="tp-card-head"><span className="tp-icon">{l.icon}</span><div><small className="tp-sub">{l.sub}</small><strong className="tp-title">{l.title}</strong></div></div>
+          <p className="tp-body">{l.body}</p>
+          <span className="tp-num">{l.n}</span>
+        </div>)}
+      </div>
+      <div className="tp-foot">
+        <div className="tp-stat"><strong>0</strong><span>defaults since inception</span></div>
+        <div className="tp-stat"><strong>≤65%</strong><span>maximum LTV on every project</span></div>
+        <div className="tp-stat"><strong>100%</strong><span>of projects with first-ranking mortgage</span></div>
+        <div className="tp-stat"><strong>3</strong><span>independent parties on every deal</span></div>
+        <Link to="/security" className="tp-cta">Full security framework →</Link>
+      </div>
     </div></section>
 
     <section className="returns-explainer"><div className="wrap re-inner">
